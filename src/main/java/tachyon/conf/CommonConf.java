@@ -42,14 +42,7 @@ public class CommonConf extends Utils {
   public final boolean ASYNC_ENABLED;
 
   private CommonConf() {
-    if (System.getProperty("tachyon.home") == null) {
-      LOG.warn("tachyon.home is not set. Using /mnt/tachyon_default_home as the default value.");
-      File file = new File("/mnt/tachyon_default_home");
-      if (!file.exists()) {
-        file.mkdirs();
-      }
-    }
-    TACHYON_HOME = getProperty("tachyon.home", "/mnt/tachyon_default_home");
+    TACHYON_HOME = getProperty("tachyon.home", "/var/lib/tachyon");
     UNDERFS_ADDRESS = getProperty("tachyon.underfs.address", TACHYON_HOME + "/underfs");
     UNDERFS_DATA_FOLDER = getProperty("tachyon.data.folder", UNDERFS_ADDRESS + "/tachyon/data");
     UNDERFS_WORKERS_FOLDER =
