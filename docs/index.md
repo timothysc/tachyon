@@ -26,14 +26,14 @@ Spark can run with Tachyon without modification. However, close integration is r
 take advantage of Tachyon and we are working towards that. End-to-end latency speedup depends on the
 workload and the framework, since various frameworks have different execution overhead.
 
+* **Pluggable underlayer file system**: Tachyon checkpoints in memory data into the underlayer file
+system. Tachyon has a generic interface to make plugging an underlayer file system easy. It
+currently supports HDFS, S3, and single node local file system. Many other file systems support is
+coming.
 
 * **Native support for raw tables**: Table data with hundreds or more columns is common in data
 warehouses. Tachyon provides native support for multi-columned data. The user can choose to only put
 hot columns in memory.
-
-* **Pluggable underlayer file system**: Tachyon checkpoints in memory data into the underlayer file
-system. Tachyon has a generic interface to make plugging an underlayer file system easy. It
-currently supports HDFS, and single node local file system.
 
 * **Web UI**: Users can browse the file system easily through web UI. Under debug mode,
 administrators can view detailed information of each file, including locations, checkpoint path,
@@ -69,6 +69,15 @@ an existing underlayer filesystem.
 
 [Tachyon Presentation](http://goo.gl/AHgz0E) at Strata and Hadoop World 2013 (October, 2013)
 
+### A Note About Hadoop Versions
+
+Tachyon uses the Hadoop-client library to talk to HDFS and other Hadoop-supported storage systems.
+Because the HDFS protocol has changed in different versions of Hadoop, you must build Tachyon
+against the same version that your cluster uses. By default, Tachyon links to Hadoop 1.0.4. You can
+change this by setting the `hadoop.version` variable when compiling:
+
+    mvn -Dhadoop.version=2.2.0 clean package
+
 # Developer Documentation
 
 [Startup Tasks for New Contributors](Startup-Tasks-for-New-Contributors.html)
@@ -88,13 +97,12 @@ out Tachyon in your cluster, please contact [Haoyuan](mailto:haoyuan@cs.berkeley
 
 Tachyon is an open source project started in the
 [UC Berkeley AMP Lab](http://amplab.cs.berkeley.edu).
-This research and development is supported in part by NSF CISE
-Expeditions award CCF-1139158 and DARPA XData Award FA8750-12-2-0331, and gifts from Amazon Web
-Services, Google, SAP, Blue Goji, Cisco, Clearstory Data, Cloudera, Ericsson, Facebook, General
-Electric, Hortonworks, Huawei, Intel, Microsoft, NetApp, Oracle, Quanta, Samsung, Splunk, VMware and
-Yahoo!.
+This research and development is supported in part by NSF CISE Expeditions award CCF-1139158 and
+DARPA XData Award FA8750-12-2-0331, and  gifts from Amazon Web Services, Google, SAP,  Apple, Inc.,
+Cisco, Clearstory Data, Cloudera, Ericsson, Facebook, GameOnTalis, General Electric, Hortonworks,
+Huawei, Intel, Microsoft, NetApp, Oracle, Samsung, Splunk, VMware, WANdisco and Yahoo!.
 
-We would also like to thank for project
+We would also like to thank to our project
 [contributors](https://github.com/amplab/tachyon/graphs/contributors).
 
 # Related Projects
