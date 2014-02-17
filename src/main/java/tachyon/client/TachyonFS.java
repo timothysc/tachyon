@@ -107,26 +107,28 @@ public class TachyonFS {
     mAvailableSpaceBytes = 0L;
   }
 
-  public static synchronized TachyonFS get(InetSocketAddress tachyonAddress) {
-    return get(tachyonAddress, false);
-  }
-
-  public static synchronized TachyonFS get(InetSocketAddress tachyonAddress, boolean zookeeper) {
-    return new TachyonFS(tachyonAddress, zookeeper);
-  }
-
-  public static synchronized TachyonFS get(String tachyonAddress) {
+  public static synchronized TachyonFS get(String tachyonAddress) throws IOException{
     boolean zookeeperMode = false;
     String tempAddress = tachyonAddress;
-    if (tachyonAddress.startsWith(Constants.FT_HEADER)) {
+    if (tachyonAddress.startsWith(Constants.HEADER)) {
+      tempAddress = tachyonAddress.substring(Constants.HEADER.length());
+    } else if (tachyonAddress.startsWith(Constants.HEADER_FT)) {
       zookeeperMode = true;
-      tempAddress = tachyonAddress.substring(12);
+      tempAddress = tachyonAddress.substring(Constants.HEADER_FT.length());
+    } else {
+      throw new IOException("Invalid Path: " + tachyonAddress + ". Use " + Constants.HEADER +
+          "host:port/ ," + Constants.HEADER_FT + "host:port/" + " , or /file");
     }
-    String[] address = tempAddress.split(":");
-    if (address.length != 2) {
+    String masterAddress = tempAddress;
+    if (tempAddress.contains("/")) {
+      masterAddress = tempAddress.substring(0, tempAddress.indexOf("/"));
+    }
+    if (masterAddress.split(":").length != 2) {
       CommonUtils.illegalArgumentException("Illegal Tachyon Master Address: " + tachyonAddress);
     }
-    return get(new InetSocketAddress(address[0], Integer.parseInt(address[1])), zookeeperMode);
+    String masterHost = masterAddress.split(":")[0];
+    int masterPort = Integer.parseInt(masterAddress.split(":")[1]);
+    return new TachyonFS(new InetSocketAddress(masterHost, masterPort), zookeeperMode);
   }
 
   public synchronized void accessLocalBlock(long blockId) {

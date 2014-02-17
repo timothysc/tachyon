@@ -18,7 +18,6 @@ package tachyon.hadoop;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -267,8 +266,8 @@ public class TFS extends FileSystem {
   public void initialize(URI uri, Configuration conf) throws IOException {
     super.initialize(uri, conf);
     LOG.info("initialize(" + uri + ", " + conf + "). Connecting to Tachyon: " + uri.toString());
-    mTFS = TachyonFS.get(new InetSocketAddress(uri.getHost(), uri.getPort()));
     mTachyonHeader = "tachyon://" + uri.getHost() + ":" + uri.getPort();
+    mTFS = TachyonFS.get(mTachyonHeader);
     mUri = URI.create(mTachyonHeader);
     UNDERFS_ADDRESS = mTFS.getUnderfsAddress();
     LOG.info(mTachyonHeader + " " + mUri + " " + UNDERFS_ADDRESS);

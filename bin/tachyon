@@ -44,15 +44,15 @@ function runTest {
 
   if [[ "$1" == "Basic" ]]; then
     $bin/tachyon.sh tfs rm /BasicFile_$2
-    $JAVA -cp $TACHYON_CONF_DIR/:$TACHYON_JAR tachyon.examples.BasicOperations $MASTER_ADDRESS:19998 /BasicFile_$2 $2
+    $JAVA -cp $TACHYON_CONF_DIR/:$TACHYON_JAR tachyon.examples.BasicOperations tachyon://$MASTER_ADDRESS:19998 /BasicFile_$2 $2
     exit 0
   elif [[ "$1" == "BasicRawTable" ]]; then
     $bin/tachyon.sh tfs rm /BasicRawTable_$2
-    $JAVA -cp $TACHYON_CONF_DIR/:$TACHYON_JAR tachyon.examples.BasicRawTableOperations $MASTER_ADDRESS:19998 /BasicRawTable_$2 $2
+    $JAVA -cp $TACHYON_CONF_DIR/:$TACHYON_JAR tachyon.examples.BasicRawTableOperations tachyon://$MASTER_ADDRESS:19998 /BasicRawTable_$2 $2
     exit 0
   elif [[ "$1" == "BasicCheckpoint" ]]; then
     $bin/tachyon.sh tfs rm /BasicCheckpoint
-    $JAVA -cp $TACHYON_CONF_DIR/:$TACHYON_JAR tachyon.examples.BasicCheckpoint $MASTER_ADDRESS:19998 /BasicCheckpoint 10
+    $JAVA -cp $TACHYON_CONF_DIR/:$TACHYON_JAR tachyon.examples.BasicCheckpoint tachyon://$MASTER_ADDRESS:19998 /BasicCheckpoint 10
     exit 0
   fi
 
@@ -98,12 +98,22 @@ function copyDir {
   wait
 }
 
+PARAMETER=""
+
 if [ "$COMMAND" == "format" ]; then
   if [ -z $TACHYON_MASTER_ADDRESS ] ; then
     TACHYON_MASTER_ADDRESS=localhost
   fi
-  echo "Formatting Tachyon @ $TACHYON_MASTER_ADDRESS"
+
+  $bin/tachyon-slaves.sh $bin/tachyon formatWorker
+
+  echo "Formatting Tachyon Master @ $TACHYON_MASTER_ADDRESS"
   CLASS=tachyon.Format
+  PARAMETER=master
+elif [ "$COMMAND" == "formatWorker" ]; then
+  echo "Formatting Tachyon Worker @ `hostname`"
+  CLASS=tachyon.Format
+  PARAMETER=worker
 elif [ "$COMMAND" == "tfs" ]; then
   CLASS=tachyon.command.TFsShell
 elif [ "$COMMAND" == "loadufs" ]; then
@@ -141,4 +151,4 @@ else
   exit 1
 fi
 
-$JAVA -cp $TACHYON_JAR -Dtachyon.home=$TACHYON_HOME -Dtachyon.master.hostname=$TACHYON_MASTER_ADDRESS -Dtachyon.logger.type=USER_LOGGER $TACHYON_JAVA_OPTS $CLASS $@
+$JAVA -cp $TACHYON_JAR -Dtachyon.home=$TACHYON_HOME -Dtachyon.master.hostname=$TACHYON_MASTER_ADDRESS -Dtachyon.logger.type=USER_LOGGER $TACHYON_JAVA_OPTS $CLASS $PARAMETER $@

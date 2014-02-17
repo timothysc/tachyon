@@ -67,9 +67,13 @@ public class LocalTachyonCluster {
     mWorkerCapacityBytes = workerCapacityBytes;
   }
 
-  public synchronized TachyonFS getClient() {
-    mClients.add(TachyonFS.get(mLocalhostName + ":" + mMasterPort));
+  public synchronized TachyonFS getClient() throws IOException {
+    mClients.add(TachyonFS.get(Constants.HEADER + mLocalhostName + ":" + mMasterPort));
     return mClients.get(mClients.size() - 1);
+  }
+
+  public String getMasterHostname() {
+    return mLocalhostName;
   }
 
   public int getMasterPort() {
@@ -135,6 +139,7 @@ public class LocalTachyonCluster {
     System.setProperty("tachyon.worker.data.folder", mWorkerDataFolder);
     System.setProperty("tachyon.worker.memory.size", mWorkerCapacityBytes + "");
     System.setProperty("tachyon.user.remote.read.buffer.size.byte", 64 + "");
+    System.setProperty("tachyon.worker.to.master.heartbeat.interval.ms", 15 + "");
 
     CommonConf.clear();
     MasterConf.clear();
@@ -178,6 +183,7 @@ public class LocalTachyonCluster {
     mMaster.stop();
 
     System.clearProperty("tachyon.home");
+    System.clearProperty("tachyon.underfs.address");
     System.clearProperty("tachyon.master.hostname");
     System.clearProperty("tachyon.master.port");
     System.clearProperty("tachyon.master.web.port");
@@ -186,6 +192,7 @@ public class LocalTachyonCluster {
     System.clearProperty("tachyon.worker.data.folder");
     System.clearProperty("tachyon.worker.memory.size");
     System.clearProperty("tachyon.user.remote.read.buffer.size.byte");
+    System.clearProperty("tachyon.worker.to.master.heartbeat.interval.ms");
   }
 
   public void stopWorker() throws Exception {

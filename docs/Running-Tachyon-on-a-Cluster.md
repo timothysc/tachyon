@@ -3,25 +3,32 @@ layout: global
 title: Running Tachyon on a Cluster
 ---
 
-To run a Tachyon on a cluster, download Tachyon into a machine:
+## Standalone cluster
+
+First download `tachyon` tar file, and extract it.
 
     $ wget http://tachyon-project.org/downloads/tachyon-0.4.0-bin.tar.gz
     $ tar xvfz tachyon-0.4.0-bin.tar.gz
 
-Edit `tachyon-env.sh` file. Setup `TACHYON_UNDERFS_ADDRESS=hdfs://HDFS_HOSTNAME:HDFS_PORT` or
-`TACHYON_UNDERFS_ADDRESS=s3://s3address`, and
-corresponding tachyon.master.hostname
-
-Edit `slaves` file, add slaves' hostnames into it. Sync the configuration to all nodes.
+In the `tachyon/conf` directory, copy `tachyon-env.sh.template` to `tachyon-env.sh`. Make sure
+`JAVA_HOME` points to a valid Java 6/7 installation. Edit `tachyon/conf/master` and
+`tachyon/conf/slaves` files. And then sync all the information to worker nodes.
 
 Now, you can start Tachyon:
 
     $ cd tachyon
     $ ./bin/tachyon format
-    $ ./bin/tachyon-start.sh all Mount
+    $ ./bin/tachyon-start.sh # use the right parameters here. e.g. all Mount
 
 To verify that Tachyon is running, you can visit
-[http://tachyon.master.hostname:19999](http://tachyon.master.hostname:19999), or see the log in the
+[http://tachyon.master.hostname:19999](http://tachyon.master.hostname:19999), check the log in the
 folder tachyon/logs, or run a sample program:
 
     $ ./bin/tachyon runTests
+
+**Note**: If you are using EC2, make sure the security group settings on the master node allow
+ incoming connections on the tachyon web UI port.
+
+## EC2 cluster with Spark
+
+If you use Spark to launch an EC2 cluster, `Tachyon` will be installed and configured by default.

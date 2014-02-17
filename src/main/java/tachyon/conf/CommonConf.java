@@ -33,6 +33,7 @@ public class CommonConf extends Utils {
   public final String UNDERFS_DATA_FOLDER;
   public final String UNDERFS_WORKERS_FOLDER;
   public final String UNDERFS_HDFS_IMPL;
+  public final String WEB_RESOURCES;
 
   public final boolean USE_ZOOKEEPER;
   public final String ZOOKEEPER_ADDRESS;
@@ -43,6 +44,7 @@ public class CommonConf extends Utils {
 
   private CommonConf() {
     TACHYON_HOME = getProperty("tachyon.home", "/var/lib/tachyon");
+    WEB_RESOURCES = getProperty("tachyon.web.resources", TACHYON_HOME + "/src/main/java/tachyon/web/resources");
     UNDERFS_ADDRESS = getProperty("tachyon.underfs.address", TACHYON_HOME + "/underfs");
     UNDERFS_DATA_FOLDER = getProperty("tachyon.data.folder", UNDERFS_ADDRESS + "/tachyon/data");
     UNDERFS_WORKERS_FOLDER =
